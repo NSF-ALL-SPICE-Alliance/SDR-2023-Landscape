@@ -1,0 +1,142 @@
+---
+title: "SDR 2023 Landscape"
+author: "Connor Flynn"
+date: "1/30/2024"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(here)
+library(janitor)
+library(naniar)
+library(plotly)
+library(ggpubr)
+library(leaflet)
+library(rnaturalearth)
+library(sf)
+```
+
+
+```{r}
+sdr_data <- read.csv(here("data/SDR-2023-Data.csv"))
+```
+
+```{r}
+sdr_data <- sdr_data %>% 
+  clean_names()
+```
+
+
+```{r}
+
+unique_colors <- c("green" = "darkseagreen", "orange" = "darkorange1", "red" = "coral2", "yellow" = "darkgoldenrod2")
+
+goal_7_faceted_bar_plot <- ggplot(data = sdr_data, aes(x = goal_7_score, 
+                            y = reorder(country, goal_7_score),
+                            fill = goal_7_dash)) +
+  geom_col(stat = "identity") +
+  facet_wrap(~regions_used_for_the_sdr, scales = "free_y") +
+  scale_fill_manual(values = unique_colors) +  # Specify manual fill scale
+  theme_minimal() +
+  theme(axis.text.y = element_text(size = 4)) +
+  labs(x = "SDG 7 Score",
+       y = "")
+
+ggplotly(goal_7_faceted_bar_plot)
+
+```
+
+```{r}
+ggplot(sdr_data, aes(x = goal_7_score, 
+                     y = goal_1_score)) +
+  theme_minimal() +
+  geom_point() +
+  geom_smooth() +
+  stat_cor()
+```
+
+```{r}
+goal_7_and_9_scatter_plot <- ggplot(sdr_data, aes(x = goal_7_score, 
+                     y = goal_1_score,
+                     color = regions_used_for_the_sdr,
+                     label = country)) +
+  theme_minimal() +
+  geom_point() +
+  scale_color_brewer(palette = "Set3")
+
+ggplotly(goal_7_and_9_scatter_plot)
+
+```
+
+```{r}
+world <- ne_countries(scale = "medium", returnclass = "sf")
+```
+
+```{r}
+world <- world %>% 
+  select(name_long, iso_a3, geometry)
+```
+
+
+```{r}
+# Rename a column in a data frame or matrix
+colnames(sdr_data)[which(colnames(sdr_data) == "country_code_iso3")] <- "iso_a3"
+```
+
+
+```{r}
+joined_df <- left_join(sdr_data, world, by = "iso_a3")
+```
+
+
+```{r}
+world_df_joined <- st_as_sf(joined_df)
+```
+
+```{r}
+world_df_joined <- st_transform(world_df_joined, "+proj=longlat +datum=WGS84")
+```
+
+
+```{r}
+mytext <- paste(
+    "Country: ", world_df_joined$country,"<br/>", 
+    "Goal 7 Score: ", round(world_df_joined$goal_7_score, 2), 
+    sep="") %>%
+  lapply(htmltools::HTML)
+
+leaflet(world_df_joined) %>% 
+  addTiles()  %>% 
+  setView( lat=10, lng=0 , zoom=2) %>%
+  addPolygons(stroke = FALSE, fillOpacity = 0.5, smoothFactor = 0.5, color = ~colorQuantile("YlOrRd", goal_7_score)(goal_7_score), label = mytext)
+```
+
+Correlation matrix
+
+```{r}
+sdr_scores <- sdr_data %>%
+  select(
+    goal_1_score, goal_2_score, goal_3_score, goal_4_score, goal_5_score,
+    goal_6_score, goal_7_score, goal_8_score, goal_9_score, goal_10_score,
+    goal_11_score, goal_12_score, goal_13_score, goal_14_score, goal_15_score,
+    goal_16_score, goal_17_score
+  )
+```
+
+
+
+```{r}
+sdr_scores_matrix <- as.matrix(sdr_scores)
+```
+
+
+```{r}
+cor <- cor(sdr_scores_matrix, use = "complete.obs")
+```
+
+```{r}
+ggcorrplot::ggcorrplot(cor, method = "circle", type = "lower", lab = TRUE)
+```
+
