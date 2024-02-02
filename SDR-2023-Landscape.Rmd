@@ -16,6 +16,10 @@ library(ggpubr)
 library(leaflet)
 library(rnaturalearth)
 library(sf)
+library(missRanger)
+library(cluster)
+library(factoextra)
+library(randomForest)
 ```
 
 
@@ -139,4 +143,145 @@ cor <- cor(sdr_scores_matrix, use = "complete.obs")
 ```{r}
 ggcorrplot::ggcorrplot(cor, method = "circle", type = "lower", lab = TRUE)
 ```
+
+goal 7 tile
+
+```{r}
+goal_seven_data <- sdr_data %>% 
+  select(country, regions_used_for_the_sdr, normalized_score_sdg7_elecac, normalized_score_sdg7_cleanfuel, normalized_score_sdg7_co2twh, normalized_score_sdg7_renewcon, goal_7_dash, goal_7_trend)
+```
+
+
+```{r}
+# Melt the data for easier plotting
+# Reshape the data using pivot_longer
+melted_data <- pivot_longer(goal_seven_data, cols = starts_with("normalized_score_sdg7"), 
+                            names_to = "variable", values_to = "value")
+
+# Plotting heatmap using geom_tile
+ggplot(melted_data, aes(x = variable, y = country, fill = value)) +
+  geom_tile(color = "white") +
+  scale_fill_viridis_c() +
+  facet_wrap(~regions_used_for_the_sdr, scales = "free_y") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1, size = 5),
+        axis.text.y = element_text(size = 5)) +
+  labs(x = "", y = "", fill = "Score") 
+```
+*I want dash and trend also on the x axis*
+
+
+```{r}
+ggplot(sdr_data, aes(x = goal_7_score, fill = regions_used_for_the_sdr)) +
+  geom_histogram(color = "black") +
+  theme_minimal() +
+  scale_fill_viridis_d()
+```
+
+
+
+
+Missing
+
+
+```{r}
+gg_miss_var(sdr_scores)
+```
+
+```{r}
+ggplot(sdr_data, aes(x = goal_7_score, 
+                     y = goal_1_score,
+                     color = regions_used_for_the_sdr,
+                     label = country)) +
+  theme_minimal() +
+  geom_miss_point() +
+  scale_color_brewer(palette = "Set3")
+
+
+```
+
+
+
+
+
+Cleaning and Imputation for ML
+- Clustering and Random Forest Regression/Classification
+
+```{r}
+sdr_data_normalized_scores <- sdr_data %>% 
+  select(country, contains("normalized_score"))
+```
+
+```{r}
+gg_miss_var(sdr_data_normalized_scores, show_pct = TRUE)
+```
+```{r}
+sdr_data_normalized_scores_less_na <- sdr_data_normalized_scores %>%
+  select(where(~ sum(is.na(.))/length(.) <= 0.3))
+```
+
+
+```{r}
+sdr_data_imputed <- missRanger(sdr_data_normalized_scores_less_na)
+```
+
+Cluster 
+
+```{r}
+sdr_data_imputed <- sdr_data_imputed %>% 
+  remove_rownames %>% 
+  column_to_rownames(var="country")
+```
+
+
+```{r}
+fviz_nbclust(sdr_data_imputed, kmeans, method = "silhouette") 
+```
+
+
+```{r}
+k2 <- kmeans(sdr_data_imputed, centers = 2)
+```
+
+```{r}
+fviz_cluster(k2, data = sdr_data_imputed) +
+  theme_minimal() 
+```
+
+Find key drivers of clustering (HI Appleseed Analysis)
+
+
+
+Random Forest
+
+
+```{r}
+rf_matmort <- randomForest(normalized_score_sdg3_matmort ~ .,
+                             data = sdr_data_imputed,
+                             importance = TRUE)
+```
+
+```{r}
+rf_matmort
+```
+
+```{r}
+importance_df <- as.data.frame(rf_matmort$importance)
+```
+
+
+```{r}
+importance_df_top_10 <- importance_df %>%
+  rownames_to_column(var = "variable") %>% 
+  slice_max(n = 10, order_by = `%IncMSE`)
+```
+
+```{r}
+ggplot(importance_df_top_10, aes(x = `%IncMSE`, y = reorder(variable, `%IncMSE`))) +
+  geom_bar(stat = "identity", fill = "steelblue", color = "black") +
+  theme_minimal()
+  
+```
+Partial Dependence Plots
+
 
