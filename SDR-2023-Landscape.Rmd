@@ -20,6 +20,8 @@ library(missRanger)
 library(cluster)
 library(factoextra)
 library(randomForest)
+library(rnaturalearthdata)
+
 ```
 
 
@@ -283,5 +285,11 @@ ggplot(importance_df_top_10, aes(x = `%IncMSE`, y = reorder(variable, `%IncMSE`)
   
 ```
 Partial Dependence Plots
+
+Week 2 Day 1 - EDA - getting to know your data, troubleshooting
+Week 2 Day 2 - Bar chart, basic viz, Maps, Histogram, Bubble Plots
+
+Week 3 Day 1 - Scatterplot w/line, correlation matrices
+Week 3 Day 2 - Machine Learning, imputing data, clustering, random forest
 
 
