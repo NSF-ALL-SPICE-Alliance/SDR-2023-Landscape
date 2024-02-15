@@ -1,0 +1,203 @@
+---
+title: "Welcome to R!"
+author: "Victoria DelaCruz"
+date: ""
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Introduction
+
+Welcome to R! We'll go over some brief introductory information on how to get started programming in R and R Studio, and make some awesome visualizations towards the end. 
+
+# Starter Information
+
+**WHAT THEY SHOULD HAVE OPEN TO FOLLOW ALONG, SUBMIT, ETC.**
+
+## Packages and Libraries
+One of the most helpful tools to an R programmer are R packages! In a nutshell, an R package is a toolbox that can have a variety of things that can be useful to you (datasets, functions, etc.). Packages are stored in a *library* in R. You already have some R packages installed - let's run some code to see which packages you have. 
+
+```{r}
+library()
+```
+
+A new window should have opened up with a list of packages and a short description! 
+
+### Installing a Package
+
+Let's say you want to start using the tidyverse package to make cool visualizations, but haven't installed it yet. Run the following code in the console to install it:
+
+```{r}
+# install.packages("tidyverse") 
+```
+Note: it's very important to follow the coding syntax (meaning, make sure the package name is in quotes within the parentheses). Also, remove the hashtag when running this line of code. 
+
+Let's double check to see if it installed correctly using the following code:
+
+```{r}
+system.file(package = "tidyverse") # input the name of the package you want to check if it's installed in quotes
+```
+
+If you got a response giving you a file path - you're all set! You successfully installed your first package! 
+
+### Loading a Library
+
+To be able to use the package and its functions in R Studio, we need to load the library (a library is where the package is stored). Run the following code to load the tidyverse library in your R session:
+
+```{r}
+library(tidyverse) # put the name of the package/library in the parenthesis 
+```
+Awesome! Now we can access the many cool things that the tidyverse package can do for us. We'll start using this package and its functions as we go along.
+
+## Variables
+
+In order to easily access datasets and data values, we need to store them somewhere! That's what variables are for - variables are containers for storing data values. Here are some basic rules for creating variables:
+
+1. They are created by using the <- or = sign. 
+2. The coding syntax depends on what type of data value you are trying to store:
+  a. Character strings are stored within quotations.
+  b. Numeric values are not surrounded by any symbols (unless you are trying to create a series of numbers).
+
+Let's practice creating some variables:
+
+1. my_name
+```{r}
+my_name <- "John Doe" # character strings are stored within quotations
+my_name # run the name of your variable to see the output
+```
+
+2. my_age
+```{r}
+my_age = 20 # numeric values do not need any quotations
+my_age # run the name of your variable to see the output
+```
+
+
+### Different Types of Data (not done)
+
+There are different data types in R:
+
+- character
+- numeric
+- integer
+- logical
+- complex
+
+#### Variable Types (not done)
+
+There are two general variable types in R:
+
+- Continuous : numeric, double, integer
+- Categorical : character, factor, logical
+
+### Removing Variables
+
+If you want to remove or delete a variable, you can run the following code:
+
+```{r}
+rm(my_name) # input the variable name in the parenthesis
+```
+
+### Variables Best Practices
+#### Naming Variables
+
+It's important to name your variables wisely. Here are some naming recommendations:
+
+- Variables can start with letters or dot characters (for ex. .var or var)
+- It should NOT start with numbers or an underscore
+- The only symbols that are allowed in variable names are . and _ (no $,%,& allowed)
+- It should NOT be a reserved keyword in R (see this [link](https://www.datamentor.io/r-programming/reserved-words) for a list of reserved keywords)
+
+## Functions
+### What are some common functions?
+
+# Exploratory Data Analysis
+
+Let's start looking into a dataset! In data science, we perform exploratory data analysis (EDA) to learn more about different patterns and relationships in our data. Run the following code to import the *Penguins* dataset that we'll be performing EDA on:
+
+### Loading Libraries
+```{r}
+library(here) # allows us to cut out long file paths
+```
+
+Note: If you get an error about not having these packages installed, run the install.packages() code we went over previously.
+
+```{r}
+penguins_data <- read_csv("data/penguins_lter.csv") # assigning the dataset to a variable so that we can access it
+View(penguins_data) # viewing the dataset
+```
+
+
+## Understanding Your Data
+
+Understanding what your data looks like is crucial to the data analysis process. Let's run some code to see what our penguins dataset is telling us:
+
+```{r}
+head(penguins_data) # view the first couple of rows and columns of your dataset
+```
+
+As we talked about earlier, it's always helpful to know what types of data you're handling. The code below shows us what type of data type each column holds (for ex., chr = character, num = numeric), the number of rows (you'll see that it's 1:344, meaning 344 rows), and some of the first few values for each column. 
+```{r}
+str(penguins_data) # looking at the data structure
+```
+
+Here is some code to see specific aspects of the data:
+
+- Viewing column names
+```{r}
+colnames(penguins_data)
+```
+- How many rows and columns
+```{r}
+dim(penguins_data)
+```
+
+- How many NA values
+
+NA values represent missing values in our data. It's important to know how many NA values are in your data to better understand how to clean and prepare your data for analysis. 
+
+```{r}
+sapply(penguins_data, function(x) sum(is.na(x))) # input the name of your data where penguins_data is
+```
+As you can see, a couple of columns have some missing/NA values. According to our output, the *Comments* columns has 318 missing values! 
+
+- Looking at responses for a specific column
+
+Let's say we're interested in the species column. Run the following code to create a table on the types of values in that column:
+
+```{r}
+table(penguins_data$Species) # after the $ operator, write the name of the column you're interested in exploring
+```
+Awesome! Let's try to input two columns to explore further: 
+
+```{r}
+table(penguins_data$Species, penguins_data$Sex) # looking at species and sex columns
+```
+Now you can see how many males and females there are for each type of penguin species. Great job!
+
+**. COLUMN??**
+
+## Cleaning Data (do here?)
+## Different Types of Graphs (not done // put before EDA?)
+
+After learning all this information about your data, how do you know what types of graphs to make, and what code to use?
+
+Photo links:
+https://extremepresentation.typepad.com/files/choosing-a-good-chart-09.pdf
+https://dataviz5.wordpress.com/
+
+
+One of the first questions you want to ask yourself is what am I trying to show? Am I looking to compare values, show correlation, distribution, 
+There's an awesome resource called [The R Graph Gallery](https://r-graph-gallery.com/index.html) that helps you through that process! It's a great place to look for visualization inspiration.
+
+
+## Basic Data Visualizations (not done)
+ 
+# Resources (not done)
+
