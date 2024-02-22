@@ -20,7 +20,8 @@ What does an error in R look like? It pops up in your console as a different col
 
 Library and package errors are one of the most common errors and usually happens early on in your code. A package error tends to happen when you haven't installed the package yet, but are trying to load it as a library. Let's try to load in the fortunes package (we haven't installed this yet!): `library(fortunes)`
 
-![Package Error](/Users/victoriadelacruz/Desktop/R/Projects/SDR-2023-Landscape/images/library_error.png)
+<img src="images/library_error.png"/>
+
 You may have gotten an error like the one in the photo - so how do we fix this? Install the package!
 
 Note: run the `install.packages("fortunes")` code without the hashtag
@@ -38,7 +39,7 @@ library(fortunes) # run the library code
 Awesome! Another error you might come across is a library error - meaning, you're trying to use functions from specific packages, but haven't loaded them in your R session yet. Every time you open up your R session, you have to load in your libraries! Let's try to use the common `ggplot()` function from the tidyverse package (remember, we haven't loaded in the tidyverse package yet): `ggplot(data=iris)+  geom_point(mapping=aes(x=Petal.Length,y=Petal.Width))`
 
 
-![Library Function Error](/Users/victoriadelacruz/Desktop/R/Projects/SDR-2023-Landscape/images/function_error.png)
+<img src="images/function_error.png"/>
 
 It says it could not find the function "ggplot"... we can fix this by running the library code to load in the tidyverse package.
 
@@ -58,7 +59,7 @@ Great job!
 File path names are super important to know how to get, especially when you're trying to import files into your R session. Try to import the dataset by using the `read_csv()` function and the name of your dataset as your input:
 `filepath_data <- read_csv("SDR-2023-Data.csv")`
 
-![File path Error](/Users/victoriadelacruz/Desktop/R/Projects/SDR-2023-Landscape/images/filepath_error.png)
+<img src ="images/filepath_error.png"/)
 
 You probably got an error saying that the data doesn't exist, but we know that it does. It's because we didn't write in the proper file path name. 
 
@@ -79,7 +80,7 @@ Success!
 
 Syntax errors occur when you have missing or unmatched parentheses, curly braces, square brackets, or quotes. Try to run this code with a missing parenthesis: `library(tidyverse`
 
-![Syntax Error](/Users/victoriadelacruz/Desktop/R/Projects/SDR-2023-Landscape/images/syntax_error.png)
+<img src = "images/syntax_error.png"/>
 
 You probably didn't get an error message, rather, a couple of plus signs. This means that your code is incomplete. Add the missing parenthesis and you're good to go!
 
@@ -87,7 +88,7 @@ You probably didn't get an error message, rather, a couple of plus signs. This m
 
 Although typos may not seem like a big deal, they definitely are in code! Let's attempt to print the filepath_data variable we made earlier:`print(filepath_dat)`
 
-![Typo Error](/Users/victoriadelacruz/Desktop/R/Projects/SDR-2023-Landscape/images/typo_error.png)
+<img src = "images/typo_error.png"/>
 
 As you can see, the error message we got says that 'filepath_dat' was not found - this is because we have a typo. These can be tricky to find as it doesn't explicitly tell us that it was a spelling error. Let's correct our typo:
 
