@@ -175,15 +175,16 @@ head(SDR_2023_Data) # view the first couple of rows and columns of your dataset
 As we talked about earlier, it's always helpful to know what types of data you're handling. The code below shows us what type of data type each column holds (for ex., chr = character, num = numeric), the number of rows (you'll see that it's 206:666, meaning 206 rows and 666 columns), and some of the first few values for each column. 
 
 ```{r}
-str(SDR_2023_Data) # looking at the data structure
+data_structure <- str(SDR_2023_Data) # looking at the data structure
 ```
 
 Wow, that's a lot of information on the dataset structure! Let's run some code to look at some of these aspects closely:
 
 - Viewing column names
 ```{r}
-colnames(SDR_2023_Data)
+column_names <- as.list(colnames(SDR_2023_Data))
 ```
+
 - How many rows and columns
 ```{r}
 dim(SDR_2023_Data)
@@ -192,10 +193,16 @@ dim(SDR_2023_Data)
 - How many NA values
 
 NA values represent missing values in our data. It's important to know how many NA values are in your data to better understand how to clean and prepare your data for analysis. We'll be storing this information in a variable called `na_values`, and look at the variable in another tab by using the `View` function. 
+```{r}
+SDR_2023_Data %>% 
+  miss_var_summary() %>% 
+  arrange(desc(pct_miss))
+```
 
 ```{r}
 na_values <- colSums(is.na(SDR_2023_Data))
-View(na_values)
+na_values %>% 
+  arrange(desc(na_values))
 ```
 As you can see, the column *SDG 2023 Index Score* has a total of 27 NA values! 
 
@@ -269,7 +276,7 @@ Pivot_longer is used to turn wide datasets to a "long" data format, or in other 
 In the pivot_longer function, we input the names of the columns to pivot (in this case, it's all the indicator columns we've selected - and don't forget to store it in a vector!), then the name of the *new* column we want the names of the old columns to be stored in (we're naming this new column "Indicator"). 
 
 ```{r}
-SDR_2023_Data %>% select(c("Country", "Population with access to clean fuels and technology for cooking (%)", "CO₂ emissions from fuel combustion per total electricity output (MtCO₂/TWh)","Population with access to electricity (%)","Renewable energy share in total final energy consumption (%)")) %>%  pivot_longer(cols = c("Population with access to clean fuels and technology for cooking (%)", "CO₂ emissions from fuel combustion per total electricity output (MtCO₂/TWh)","Population with access to electricity (%)","Renewable energy share in total final energy consumption (%)"), names_to = "Indicator")
+SDR_2023_Data %>% select(c("Country", "Population with access to clean fuels and technology for cooking (%)", "CO₂ emissions from fuel combustion per total electricity output (MtCO₂/TWh)","Population with access to electricity (%)","Renewable energy share in total final energy consumption (%)")) %>%  pivot_longer(cols != "Country", names_to = "Indicator")
 ```
 
 
