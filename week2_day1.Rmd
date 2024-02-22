@@ -14,11 +14,11 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Introduction
 
-Welcome to R! We'll go over some brief introductory information on how to get started programming in R and R Studio, and make some awesome visualizations towards the end. 
+Welcome to R! We'll go over some brief introductory information on how to get started programming in R and R Studio, exploratory data analysis, and helpful coding resources. 
 
-# Starter Information
+# Starter Information **DOUBLE CHECK**
 
-**WHAT THEY SHOULD HAVE OPEN TO FOLLOW ALONG, SUBMIT, ETC.**
+To follow along with this lesson, you should have an R Script (OR R MARKDOWN??, or TEMPLATE??) open. 
 
 ## Packages and Libraries
 One of the most helpful tools to an R programmer are R packages! In a nutshell, an R package is a toolbox that can have a variety of things that can be useful to you (datasets, functions, etc.). Packages are stored in a *library* in R. You already have some R packages installed - let's run some code to see which packages you have. 
@@ -33,15 +33,16 @@ A new window should have opened up with a list of packages and a short descripti
 
 Let's say you want to start using the tidyverse package to make cool visualizations, but haven't installed it yet. Run the following code in the console to install it:
 
+Note: it's very important to follow the coding syntax (make sure the package name is in quotes within the parentheses). Also, remove the hashtag when running this line of code. 
+
 ```{r}
 # install.packages("tidyverse") 
 ```
-Note: it's very important to follow the coding syntax (meaning, make sure the package name is in quotes within the parentheses). Also, remove the hashtag when running this line of code. 
 
 Let's double check to see if it installed correctly using the following code:
 
 ```{r}
-system.file(package = "tidyverse") # input the name of the package you want to check if it's installed in quotes
+system.file(package = "tidyverse") # input the name of the package in quotes
 ```
 
 If you got a response giving you a file path - you're all set! You successfully installed your first package! 
@@ -57,7 +58,7 @@ Awesome! Now we can access the many cool things that the tidyverse package can d
 
 ## Variables
 
-In order to easily access datasets and data values, we need to store them somewhere! That's what variables are for - variables are containers for storing data values. Here are some basic rules for creating variables:
+In order to easily access datasets and values, we need to store them somewhere! That's what variables are for - variables are containers for storing data values. Here are some basic rules for creating variables:
 
 1. They are created by using the <- or = sign. 
 2. The coding syntax depends on what type of data value you are trying to store:
@@ -79,22 +80,38 @@ my_age # run the name of your variable to see the output
 ```
 
 
-### Different Types of Data (not done)
+### Different Types of Data
+
+Understanding the different types of data is crucial when building out your visualizations and throughout the data analysis process. It is super useful when trying to figure out what graph to use or what story you're trying to tell through your data.
+
+#### Qualitative vs. Quantitative
+
+The main two types of data are qualitative and quantitative:
+
+- Qualitative data is categorical data, or an easier way to remember this is any values that are in words or letters. Common examples include gender, home town, etc. Sometimes, qualitative data can be presented as a numeric, but still have categorical/qualitative value (for example, postal codes).
+
+- Quantitative data is numerical data and is represented by numbers. There are two types of quantitative data:
+  - Discrete data is FINITE, or in other words, only whole numbers. For example, the number of students taking this course.
+  - Continuous data is INFINITE, or in other words, can be decimal points and is almost impossible to count. For example, temperature ranges and time intervals.
+  
+Note: in most common and basic plots, discrete variables are used for the x-axis and continuous variables are used for the y-axis.
+
+![Source: https://medium.com/@chiomaviolet39/types-of-data-1292b1f9311d](https://miro.medium.com/v2/resize:fit:1100/format:webp/0*eungLD07OZh0p_H6.png)
+
+
+#### R Data Types
 
 There are different data types in R:
 
-- character
-- numeric
-- integer
-- logical
-- complex
+- character (also known as strings; "a", "cat")
+- numeric (1, 25.2)
+- integer (numeric data without decimals)
+- logical (also known as Boolean; TRUE or FALSE)
+- complex (9 + 2i, where "i" is an imaginary number)
 
-#### Variable Types (not done)
+To put this into perspective with our knowledge on qualitative and quantitative data:
 
-There are two general variable types in R:
-
-- Continuous : numeric, double, integer
-- Categorical : character, factor, logical
+In most cases, characters and logical R data types are considered qualitative data. Numeric, integer, and complex are mostly considered quantitative data.
 
 ### Removing Variables
 
@@ -114,14 +131,27 @@ It's important to name your variables wisely. Here are some naming recommendatio
 - The only symbols that are allowed in variable names are . and _ (no $,%,& allowed)
 - It should NOT be a reserved keyword in R (see this [link](https://www.datamentor.io/r-programming/reserved-words) for a list of reserved keywords)
 
+#### Creating New Variables
+
+After you read in your dataset and assign it to a variable (which we're going to do in a bit), the next step is to manipulate, clean, and subset your data. As you start to play around with your data, it's recommended to assign the clean or modified version of your data to a new variable. 
+
+In other words, it's good practice to keep your original dataset in the event you need to refer to it in the future.
+
 ## Functions
-### What are some common functions?
+
+In the programming world, functions are used to complete tasks quickly and efficiently. They are many built-in functions in different R packages, and we can write functions ourselves! At this point in the lesson, we've already used and called several functions (library, system.file, and rm). In most cases, you'll know you're using a function when you input arguments within a parenthesis (). 
+
+What are arguments? 
+
+When we talk about arguments, we mean the specifications and variables you input within a function. For example, when we did our `libary()` call, the argument or input was the name of the library/package we wanted to load. 
+
+We'll get to some of the most common functions used in the next section, as we'll apply them to our dataset! 
 
 # Exploratory Data Analysis
 
-Let's start looking into a dataset! In data science, we perform exploratory data analysis (EDA) to learn more about different patterns and relationships in our data. Run the following code to import the *Penguins* dataset that we'll be performing EDA on:
+Let's start looking into a dataset. In data science, we perform exploratory data analysis (EDA) to learn more about different patterns and relationships in our data. Run the following code to import the *SDR 2023* dataset that we'll be performing EDA on:
 
-### Loading Libraries
+## Loading Libraries
 ```{r}
 library(here) # allows us to cut out long file paths
 ```
@@ -129,75 +159,142 @@ library(here) # allows us to cut out long file paths
 Note: If you get an error about not having these packages installed, run the install.packages() code we went over previously.
 
 ```{r}
-penguins_data <- read_csv("data/penguins_lter.csv") # assigning the dataset to a variable so that we can access it
-View(penguins_data) # viewing the dataset
+SDR_2023_Data <- read_csv("data/SDR-2023-Data.csv") # assigning the dataset to a variable so that we can access it
+View(SDR_2023_Data) # viewing the dataset
 ```
 
 
 ## Understanding Your Data
 
-Understanding what your data looks like is crucial to the data analysis process. Let's run some code to see what our penguins dataset is telling us:
+Understanding what your data looks like is crucial to the data analysis process. Let's run some code to see what our SDR 2023 dataset is telling us:
 
 ```{r}
-head(penguins_data) # view the first couple of rows and columns of your dataset
+head(SDR_2023_Data) # view the first couple of rows and columns of your dataset
 ```
 
-As we talked about earlier, it's always helpful to know what types of data you're handling. The code below shows us what type of data type each column holds (for ex., chr = character, num = numeric), the number of rows (you'll see that it's 1:344, meaning 344 rows), and some of the first few values for each column. 
+As we talked about earlier, it's always helpful to know what types of data you're handling. The code below shows us what type of data type each column holds (for ex., chr = character, num = numeric), the number of rows (you'll see that it's 206:666, meaning 206 rows and 666 columns), and some of the first few values for each column. 
+
 ```{r}
-str(penguins_data) # looking at the data structure
+str(SDR_2023_Data) # looking at the data structure
 ```
 
-Here is some code to see specific aspects of the data:
+Wow, that's a lot of information on the dataset structure! Let's run some code to look at some of these aspects closely:
 
 - Viewing column names
 ```{r}
-colnames(penguins_data)
+colnames(SDR_2023_Data)
 ```
 - How many rows and columns
 ```{r}
-dim(penguins_data)
+dim(SDR_2023_Data)
 ```
 
 - How many NA values
 
-NA values represent missing values in our data. It's important to know how many NA values are in your data to better understand how to clean and prepare your data for analysis. 
+NA values represent missing values in our data. It's important to know how many NA values are in your data to better understand how to clean and prepare your data for analysis. We'll be storing this information in a variable called `na_values`, and look at the variable in another tab by using the `View` function. 
 
 ```{r}
-sapply(penguins_data, function(x) sum(is.na(x))) # input the name of your data where penguins_data is
+na_values <- colSums(is.na(SDR_2023_Data))
+View(na_values)
 ```
-As you can see, a couple of columns have some missing/NA values. According to our output, the *Comments* columns has 318 missing values! 
+As you can see, the column *SDG 2023 Index Score* has a total of 27 NA values! 
+
 
 - Looking at responses for a specific column
 
-Let's say we're interested in the species column. Run the following code to create a table on the types of values in that column:
+Let's say we're interested in looking at the different responses for the column *Goal 7 Dash*. Run the following code to create a table on the types of values and frequency in that column:
 
 ```{r}
-table(penguins_data$Species) # after the $ operator, write the name of the column you're interested in exploring
+table(SDR_2023_Data$`Goal 7 Dash`) # after the $ operator, write the name of the column you're interested in exploring
 ```
 Awesome! Let's try to input two columns to explore further: 
 
 ```{r}
-table(penguins_data$Species, penguins_data$Sex) # looking at species and sex columns
+table(SDR_2023_Data$`Goal 7 Dash`, SDR_2023_Data$`Regions used for the SDR`) # looking at 2 columns, separated by a ,
 ```
-Now you can see how many males and females there are for each type of penguin species. Great job!
+Now you can see how many countries in each region got green, orange, red, and yellow scores for SDG Goal 7. We've also used 8 new functions (View, read_csv, head, dim, etc.). Great job!
 
-**. COLUMN??**
+## Cleaning and Manipulating Data 
 
-## Cleaning Data (do here?)
-## Different Types of Graphs (not done // put before EDA?)
-
-After learning all this information about your data, how do you know what types of graphs to make, and what code to use?
-
-Photo links:
-https://extremepresentation.typepad.com/files/choosing-a-good-chart-09.pdf
-https://dataviz5.wordpress.com/
+The next step is cleaning and manipulating data. There are different ways to do this, depending on what your goals are and what specific aspects or relationships you're trying to show. We'll be going over some common data cleaning and manipulation functions that are found in the tidyverse package that we've already loaded.
 
 
-One of the first questions you want to ask yourself is what am I trying to show? Am I looking to compare values, show correlation, distribution, 
-There's an awesome resource called [The R Graph Gallery](https://r-graph-gallery.com/index.html) that helps you through that process! It's a great place to look for visualization inspiration.
+*1. select()*
+
+Select is a function used to subset or select columns in your R data frame. The first *argument* that `select()` takes in is x, or the data. The next argument is the column(s) you want to select. Let's try this out by selecting the SDG 3 and SDG 4 scores.
+
+```{r}
+select(SDR_2023_Data, c("Goal 3 Score", "Goal 4 Score"))
+```
+
+If you're wondering why we used the letter c and the extra parenthesis, it's because we put it in a vector! When we are listing multiple columns or variables, we store them in a vector. To do this, we put the character `c`, followed by an open parenthesis, your columns/variables (remember what we discussed earlier - if you're typing letters, they need to be in quotes!) separated by commas, and close parenthesis. 
+
+What if we want to subset specific rows? We can do this by using the filter function. 
 
 
-## Basic Data Visualizations (not done)
+*2. filter()*
+
+Similarly to select, `filter()` can be used to extract specific rows. Let's try this out by filtering our data for those within the Oceania region.
+
+In order to do this, the first argument filter takes is x, or the dataset, followed by the condition we are filtering for (in this case, we want to filter out all rows that fall under the Oceania region). We write out the column name "Regions used the for SDR" followed by == and then "Oceania". 
+
+
+```{r}
+filter(SDR_2023_Data, `Regions used for the SDR` == "Oceania")
+```
+
+Notes: 
+- In programming, we don't use spaces in names (usually, if you want to use a space between words, you'd use an underscore, slash, or other punctuation). That's why we used these hashmarks `` to write the column name - this is how R is able to read in the spaces. 
+
+- As we went over earlier, the = sign is used to assign variables. If we want to program the equal sign (for example, 2 = 2), we need to use two equal signs!
+  - In the filter example we just did, we are filtering for Regions that are EQUAL to "Oceania", hence the two equal signs. 
+  
+  
+*3. group_by() and summarise()*
+
+Group_by is a great way to view and group a column. This function goes hand-in-hand with another useful function, `summarise()`. Summarise is used to compute summary statistics or aggregate data within each group created by `group_by()`. 
+
+Note: In the following code, we are using the %>% (pipe) operator. This allows us to connect functions within our code so that it performs each step at a time. We start off with our data (SDR_2023_Data), then use the pipe operator to use the group_by() function, and then again to use the summarise() function. 
+
+```{r}
+SDR_2023_Data %>% group_by(`Regions used for the SDR`) %>% 
+  summarise(goal_7_score = sum(`Population using at least basic drinking water services (%)`))
+```
+
+
+*4. pivot_longer*
+
+Pivot_longer is used to turn wide datasets to a "long" data format, or in other words, reshaping the data. Let's try this out with selecting and looking at Goal 7 indicators. In the following coding example, we'll first start off with our data and a function that we already know, `select()`. Then, we're using the pipe operator to use `pivot_longer` to reshape our data.
+
+In the pivot_longer function, we input the names of the columns to pivot (in this case, it's all the indicator columns we've selected - and don't forget to store it in a vector!), then the name of the *new* column we want the names of the old columns to be stored in (we're naming this new column "Indicator"). 
+
+```{r}
+SDR_2023_Data %>% select(c("Country", "Population with access to clean fuels and technology for cooking (%)", "CO₂ emissions from fuel combustion per total electricity output (MtCO₂/TWh)","Population with access to electricity (%)","Renewable energy share in total final energy consumption (%)")) %>%  pivot_longer(cols = c("Population with access to clean fuels and technology for cooking (%)", "CO₂ emissions from fuel combustion per total electricity output (MtCO₂/TWh)","Population with access to electricity (%)","Renewable energy share in total final energy consumption (%)"), names_to = "Indicator")
+```
+
+
+## Different Types of Graphs
+
+After learning all this information about your data and data manipulation, how do you know what types of graphs to make, and what code to use?
+
+One of the first questions you want to ask yourself is what am I trying to show? Am I looking to compare values, show correlation, distribution, or changes over time? 
+
+![Source: https://datavizblog.files.wordpress.com/2013/04/andrew-abela-chart-chooser-in-color.jpg](https://datavizblog.files.wordpress.com/2013/04/andrew-abela-chart-chooser-in-color.jpg)
+There's an awesome resource called [The R Graph Gallery](https://r-graph-gallery.com/index.html) that helps you through that process! It's a great place to look for visualization inspiration and includes R template code for you to follow.
+
+Another cool resource is called [from Data to Viz](https://www.data-to-viz.com/). This provides a guide based on the number and types of variables you have, and provides examples and code as well! 
+
  
-# Resources (not done)
+# Resources
 
+The awesome thing about data science is that there are so many helpful resources to help you get started and throughout your data career. Here is a list of common resources that you may find helpful:
+
+- [W3 Schools](https://www.w3schools.com/r/default.asp)
+- [Geeks for Geeks](https://www.geeksforgeeks.org/r-tutorial/?ref=outind)
+- [Stack Overflow](https://stackoverflow.com/questions/tagged/r)
+- [R Bloggers](https://www.r-bloggers.com/2015/12/how-to-learn-r-2/)
+
+
+# TO DO NOT DONE
+1. create my_name and my_age variables
+2. use either select for 2 different sdg scores, or filter for another region
