@@ -35,6 +35,7 @@ library(cluster)
 library(randomForest) # runs random forest algorithm
 library(missRanger) # imputes data through with random forest method
 library(factoextra) # visualizes clusters
+library(pdp)
 ```
 
 
@@ -125,7 +126,7 @@ sdr_data_normalized_scores_longer <- sdr_data_normalized_scores %>%
 missing_data_by_country <- sdr_data_normalized_scores_longer %>%
  group_by(country) %>%
  miss_var_summary() %>% 
-  arrange(desc(pct_miss))
+ arrange(desc(pct_miss))
 
 missing_data_by_country
 ```
@@ -134,7 +135,7 @@ missing_data_by_country
 
 
 ```{r}
-completely_na_countries  <- missing_data_by_country$country[missing_data_by_country$pct_miss > 99]
+completely_na_countries  <- missing_data_by_country$country[missing_data_by_country$pct_miss == 100]
 completely_na_countries
 ```
 Unfortunately, we cannot keep these countries in our analysis due to them not having any data for any of the sdg scores. The challenge of missing data in these countries is important, and needs to be acknowledged in this kind of work
@@ -146,7 +147,7 @@ sdr_data_normalized_scores_no_na_countries <- sdr_data_normalized_scores %>%
   filter(!country %in% completely_na_countries)
 ```
 
-With the new list of 179 countries (few of them are regions) let's take another look at missinf data by variable/column
+With the new list of 179 countries (few of them are regions) let's take another look at missing data by variable/column
 
 We are only going to keep the variables/columns where less than 20% of the data is missing, so let's add a line to the plot to indicate the cutoff
 
@@ -175,11 +176,17 @@ Impute the missing data using a random forest method from the missRanger package
     
 
 
-```{r message=FALSE}
+```{r message=FALSE, results='hide'}
 sdr_data_imputed <- missRanger(sdr_data_normalized_scores_less_na)
 ```
 
 #### Clustering
+
+Are there *groups* of countries based on SDR 2023 Scores? How many groups are there? Which countries fall into which group?
+
+Review this (excellent UC Business Analytics guide to clustering)[https://uc-r.github.io/kmeans_clustering]
+  
+  - We follow a very similar method
 
 The functions we are going to use to cluster require that the column being clustered (country), based on the information in all of the other columns (sdg scores) is actually the rownames of the dataframe
 
@@ -193,11 +200,14 @@ sdr_data_imputed <- sdr_data_imputed %>%
 ```
 
 The function below assists us in determining the number of groups or clusters based on our data
+
 - Wherever the dashed line fall, is the number we will put into the next function: Kmeans()
 
 ```{r}
 fviz_nbclust(sdr_data_imputed, kmeans, method = "silhouette")
 ```
+
+
 The kmeans() function clusters countries into groups (int this case 2, visualized above) based on 84 SDG scores
 
 ```{r}
@@ -226,7 +236,7 @@ country_clusters <- as.data.frame(k2$cluster)
 
 Which of the 98 SDG Indicators in the 2023 Sustainable Development Report are the **strongest predictors** of maternal mortality?
 
-To answer this question, we train a random forest model to make predictions of maternal mortality scores for each country and then ask the model which SDG Scores were the most important in making it's prediction
+To answer this question, we train a random forest model to make predictions of maternal mortality scores for each country and then ask the model which SDG Scores were the most important/influential in making it's prediction
 
 
 ```{r}
@@ -269,3 +279,46 @@ ggplot(importance_df_top_10, aes(x = `%IncMSE`, y = reorder(variable, `%IncMSE`)
        x = "Feature Importance (% Increase in Mean Squared Error)")
 
 ```
+
+
+
+
+
+Lastly, we want to know how these important variables influence the prediction: positively or negatively?
+
+- To answer this, we use partial dependence plots from the [pdp package](https://journal.r-project.org/archive/2017/RJ-2017-016/RJ-2017-016.pdf)
+
+
+```{r}
+pdp::partial(rf_matmort, pred.var = "normalized_score_sdg6_sanita", plot = TRUE)
+```
+
+
+*How to interpret*:
+  
+- yhat is the models prediction of maternal mortality scores
+  
+  - note the range is only from 77 to 85
+- the x axis is the SDG 6 sanitation score
+- Once the SDG 6 sanitation score reaches 40 the model starts to predict higher maternal mortality scores 
+- Remeber, this is a general trend for all countries in the dataset
+
+
+Now that we saw how one variable influences the models prediction, how about 2 variables?
+  
+
+
+```{r}
+pd <- pdp::partial(rf_matmort, pred.var = c("normalized_score_sdg6_sanita", "normalized_score_sdg3_u5mort"))
+# Default PDP
+plotPartial(pd)
+```
+
+*How to interpret*:
+
+- the y axis is SDG 3 under 5 mortality score
+- the the x axis is the SDG 6 sanitation score
+- the color is the models prediction of SDG 3 maternal mortality scores
+
+  - intuitively, the models prediction of SDG 3 maternal mortality scores increases when SDG 3 under 5 mortality score and SDG 6 sanitation score increase
+  
