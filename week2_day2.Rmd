@@ -1,0 +1,112 @@
+---
+title: "Basic Visualizations"
+author: "Victoria DelaCruz"
+date: ""
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Welcome to Basic Visualizations! We're going to go over some code on how to create a scatter plot, bar chart, and a histogram using our SDR 2023 data. 
+
+# Starter Information
+
+You should have *R, R Studio, ...*
+**NA VALUES**
+
+## Loading Libraries
+
+Let's load in the `tidyverse`, `janitor`, and `here` libraries as we'll be using different functions within these packages. 
+
+```{r}
+library(tidyverse)
+library(here)
+library(janitor)
+```
+
+## Reading in Data
+
+Next, let's read in our data and assign it to the variable `sdr_data`.
+
+```{r}
+sdr_data <- read.csv(here("data/SDR-2023-Data.csv"))
+```
+
+Use the `clean_names` function to clean up the column names in our data. 
+
+```{r}
+sdr_data <- sdr_data %>% 
+  clean_names()
+```
+
+
+# Scatterplot
+
+In the following code, we're choosing SDG Goal 3 as our x-axis and SDG Goal 4 as our y-axis. We're interested in looking at patterns within regions, so we're going to color the points by region.
+
+```{r}
+ggplot(sdr_data, aes(x= goal_3_score, y = goal_4_score, col= regions_used_for_the_sdr)) +
+  geom_point() +
+  labs(title = "Scatterplot", # customizing our scatterplot
+       x = "SDG 3 Score",
+       y = "SDG 4 Score",
+       color = "Region") +
+  theme_minimal() # selecting a color palette
+```
+
+Interpretation:
+Many countries in Sub-Saharan Africa seem to be in the lower left quadrant of our graph, meaning they aren't doing as well in good health and well-being (SDG 3) and quality education (SDG 4) compared to the rest of the world. There seems to be a cluster or group of countries that belong to the OECD region on the top right quadrant, meaning they're doing better in terms of these goals. 
+
+# Bar Chart
+```{r}
+ggplot(sdr_data, aes(x= goal_3_score, y = country)) +
+  geom_bar(stat = "identity")
+```
+```{r}
+OECD <- sdr_data %>% filter(regions_used_for_the_sdr == "OECD")
+
+ggplot(OECD, aes(x= goal_3_score, y = country)) +
+  geom_bar(stat = "identity") 
+```
+
+## Faceted Bar Chart
+```{r}
+unique_colors <- c("green" = "darkseagreen", "orange" = "darkorange1", "red" = "coral2", "yellow" = "darkgoldenrod2")
+
+goal_3_faceted_bar_plot <- ggplot(data = sdr_data, aes(x = goal_3_score, 
+                            y = reorder(country, goal_3_score),
+                            fill = goal_3_dash)) +
+  geom_col(stat = "identity") +
+  facet_wrap(~regions_used_for_the_sdr, scales = "free_y") +
+  scale_fill_manual(values = unique_colors) + 
+  theme_minimal() +
+  theme(axis.text.y = element_text(size = 4)) +
+  labs(x = "SDG 3 Score",
+       y = "")
+
+goal_3_faceted_bar_plot
+```
+
+Interpretation:
+As we can see in the Oceania region, there is not much data. Sub-Saharan Africa appears to have the most "red" compared to the other regions.
+
+# Histogram
+```{r}
+ggplot(sdr_data, aes(x = goal_4_score)) +
+  geom_histogram()
+```
+
+```{r}
+ggplot(sdr_data, aes(x = goal_4_score, fill=regions_used_for_the_sdr)) +
+  geom_histogram()
+```
+
+Interpretation:
+Countries that fall in the higher end of the Goal 4 spectrum belong to the OECD region, while countries in Sub-Saharan Africa lie towards the lower end. 
+
+
