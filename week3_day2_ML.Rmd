@@ -22,7 +22,7 @@ output: html_document
 
 #### Setup
 
-Loading in our Libaries
+Loading in our Libraries
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
