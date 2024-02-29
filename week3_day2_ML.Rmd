@@ -1,6 +1,6 @@
 ---
 title: "Machine Learning"
-author: "Connor Flynn | Victoria Delacruz"
+author: "Connor Flynn | Victoria DelaCruz"
 date: "2/13/2024"
 output: html_document
 ---

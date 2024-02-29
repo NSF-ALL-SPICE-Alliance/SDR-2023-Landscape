@@ -1,8 +1,11 @@
 ---
 title: "Statistics"
-author: "Connor Flynn | Victoria Delacruz"
+author: "Connor Flynn | Victoria DelaCruz"
 date: "2/26/2024"
-output: html_document
+output: 
+  html_document:
+    toc: true
+    toc_float: true
 ---
 
 <img src="logos/SpiceLogo1.png" width="240" /> <img src="logos/cifal_logo.png" width="200" />
@@ -14,7 +17,7 @@ output: html_document
 2. **Correlation Matrix** How can we determine correlation between all sdg scores more efficiently than by employing/visualizing linear regression for every pair of sdg scores? Can we see broader patterns?
 
 
-#### Setup
+### Setup
 
 Loading in our Libraries
 
@@ -35,7 +38,7 @@ Read in 2023 Sustainable Development Data with *read_csv()* and *here()*
 sdr_data <- read_csv(here("data/SDR-2023-Data.csv"))
 ```
 
-Clean column names
+Clean column names with clean_names() from the janitor package
 
 ```{r}
 sdr_data <- sdr_data %>% 
@@ -45,7 +48,7 @@ sdr_data <- sdr_data %>%
 
 Let's start with the scatter plot you learned how to create in the last lesson
 
-```{r}
+```{r, warning=FALSE}
 ggplot(sdr_data, aes(x = goal_7_score, 
                      y = goal_1_score)) +
   geom_point() +
@@ -57,10 +60,13 @@ It seems that there is a general trend that countries with higher goal 7 scores 
 - Note: There are outliers regarding this trend 
     
   - Countries with a high goal 7 score but low goal 1 score and vice versa
+  
+  
+### Linear Regression
 
 - Let's draw a line through the points to help us visually examine the potential relationship between the 2 sdg scores by using geom_smooth()
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 ggplot(sdr_data, aes(x = goal_7_score, 
                      y = goal_1_score)) +
   geom_point() +
@@ -87,7 +93,7 @@ Now, we can view the trend line moves up and to the right indicating a positive 
     - Let's calculate and print the correlation coefficient on the scatter plot with the stat_cor() function
     
     
-```{r}
+```{r, warning=FALSE, message=FALSE}
 ggplot(sdr_data, aes(x = goal_7_score, 
                      y = goal_1_score)) +
   geom_point() +
@@ -102,11 +108,18 @@ Awesome! Now we have a correlation coefficent (R = 0.79) What does this mean?
 
   - So 0.79 out of a potential 1 indicates a relatively strong positive correlation
   
-- Let's explore correlation coefficient with (this very cool hands on resource)[https://rpsychologist.com/correlation/]
+- Let's explore correlation coefficient with [this very cool hands on resource](https://rpsychologist.com/correlation/)
+
+Lastly for this graph, we also see a p value (p < 2.2e -16)
+  
+  - The p-value is a measure that helps determine the **significance** of the results obtained from a statistical test
+    
+    - Commonly, a significance level (α) of 0.05 (or 5%) is used in hypothesis testing. If the p-value is less than the significance level (p < α), it is considered statistically significant, indicating that the observed results are unlikely to have occurred by chance alone, and the null hypothesis is rejected.
+      
+      - This notation means that the p-value is less than 2.2e -16. In other words, it's an extremely small value, close to zero.
 
 
-
-#### Correlation Matrix
+### Correlation Matrix
 
 Now that we understand what a correlation coefficient is and how we can calculate it for 2 sdg scores, can we calculate a correlation coefficient for every pair of sdg scores with one function and plot?
 
@@ -141,7 +154,9 @@ Finally, we can plot the correlation coefficients with ggcorrplot!
 
 
 ```{r}
-ggcorrplot::ggcorrplot(cor, method = "circle", type = "lower", lab = TRUE)
+ggcorrplot::ggcorrplot(cor, method = "circle", type = "lower", lab = TRUE, lab_size = 2) +
+  theme(axis.text.y = element_text(size = 8),
+  axis.text.x = element_text(size = 8))
 ```
 
 Interesting! 
@@ -151,6 +166,8 @@ There's a few takeaways here
 - Most goals have a positive correlation that is relatively strong
   
   - The strongest positive correlation is between goal 3 scores and goal 9 scores 
+    
+    - Good Health and Industry Innovation and Infrastructure
   
 - Goal 12 and 13 scores seem to have relatively strong negative correlations with the rest of the SDG scores
 
@@ -167,4 +184,29 @@ There's a few takeaways here
   - Goal 10 & 15 also have relatively weak correlations with the rest of the goals
   
   
-To circle back 
+To circle back and reinforce how the linear regression (line drawn through our scatter plot) and correlation coefficients in the matrix above are related 
+
+- There is a negative correlation between Goal 9 scores and Goal 12 scores: correlation coefficient (-0.82 out of a possible -1)
+  
+  - What does this look like on sscatter plot?
+  
+```{r, warning=FALSE, message=FALSE}
+ggplot(sdr_data, aes(x = goal_12_score, 
+                     y = goal_9_score)) +
+  geom_point() +
+  geom_smooth() +
+  stat_cor() +
+  theme_minimal() 
+```
+
+### Challenge
+
+1. Plot a linear regression of 2 sdg scores, not the ones in this lesson, with ggplot() and geom_smooth()
+  
+    - add a correlation coefficient to the plot with stat_cor()
+    - make the plot interactive with ggplotly() so you can hover over the points and see the country, x axis sdg score, and y axis sdg score
+    - describe what you see in 4 - 6 sentences
+  
+2. Take a further look at the correlation matrix plotted above
+
+    - in 4-6 sentences, come up with a hypotheses for the positive or negative correlation between 2 goals
