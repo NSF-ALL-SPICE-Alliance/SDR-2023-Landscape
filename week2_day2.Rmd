@@ -1,6 +1,6 @@
 ---
 title: "Basic Visualizations"
-author: "Victoria DelaCruz"
+author: "Connor Flynn | Victoria DelaCruz"
 date: ""
 output: 
   html_document:
@@ -11,15 +11,20 @@ output:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+<img src="logos/SpiceLogo1.png" width="240" /> <img src="logos/cifal_logo.png" width="200" />
 
-Welcome to Basic Visualizations! We're going to go over some code on how to create a scatter plot, bar chart, and a histogram using our SDR 2023 data. 
+### Today's Topics
 
-# Starter Information
+Welcome to Basic Visualizations! We're going to go over some code on how to create our first visualizations using our SDR 2023 Data.
 
-You should have *R, R Studio, ...*
-**NA VALUES**
+1. Scatter plot
+2. Bar chart
+3. Histogram
+4. Challenge!
 
-## Loading Libraries
+### Setup
+
+#### Loading Libraries
 
 Let's load in the `tidyverse`, `janitor`, and `here` libraries as we'll be using different functions within these packages. 
 
@@ -29,7 +34,7 @@ library(here)
 library(janitor)
 ```
 
-## Reading in Data
+#### Reading in Data
 
 Next, let's read in our data and assign it to the variable `sdr_data`.
 
@@ -44,69 +49,97 @@ sdr_data <- sdr_data %>%
   clean_names()
 ```
 
+#### `ggplot()`
 
-# Scatterplot
+We're going to be using the `ggplot()` frequently to graph our visualizations. ggplot is a powerful visualization package for R and allows for customization in creating our plots. Here are some basic concepts and inputs in ggplot:
 
-In the following code, we're choosing SDG Goal 3 as our x-axis and SDG Goal 4 as our y-axis. We're interested in looking at patterns within regions, so we're going to color the points by region.
+1. Specify your data 
+2. Aesthetics: decide what your x and y variables are, color schemes, size, etc.
+3. Geometric objects/geoms: decide if you're graphing with points, lines, bars, etc.
+4. Statistical transformations/stats: think about if you want to include a smooth line, visualize regressions, etc.
+5. Facets: consider using facets to create separate plots if you have multiple categories
+
+### Scatterplot
+
+When should we use a **scatterplot**? 
+
+Scatterplots are helpful in visualizing relationships between two continuous variables. For instance, we can identify patterns or trends between two variables, clusters or groups, or compare. Let's review the [from Data to Viz](https://www.data-to-viz.com/) resource to learn more. 
+
+In the following code, we're choosing SDG Goal 3 as our x-axis and SDG Goal 4 as our y-axis.
 
 ```{r}
-ggplot(sdr_data, aes(x= goal_3_score, y = goal_4_score, col= regions_used_for_the_sdr)) +
-  geom_point() +
-  labs(title = "Scatterplot", # customizing our scatterplot
-       x = "SDG 3 Score",
-       y = "SDG 4 Score",
-       color = "Region") +
-  theme_minimal() # selecting a color palette
+ggplot(sdr_data, aes(x= goal_3_score, y = goal_4_score)) +
+  geom_point()
+```
+Awesome! What if we wanted to see which points belong to different regions? Let's use the `color` argument to add some color to do so.
+
+```{r}
+ggplot(sdr_data, aes(x= goal_3_score, y = goal_4_score, color = regions_used_for_the_sdr)) +
+  geom_point()
 ```
 
 Interpretation:
 Many countries in Sub-Saharan Africa seem to be in the lower left quadrant of our graph, meaning they aren't doing as well in good health and well-being (SDG 3) and quality education (SDG 4) compared to the rest of the world. There seems to be a cluster or group of countries that belong to the OECD region on the top right quadrant, meaning they're doing better in terms of these goals. 
 
-# Bar Chart
+### Bar Chart
+
+When should we use a **bar chart**?
+
+A bar chart is great for visualizing categorical data, showing distributions, looking at frequencies, or comparing variables. 
+
 ```{r}
 ggplot(sdr_data, aes(x= goal_3_score, y = country)) +
   geom_bar(stat = "identity")
 ```
+
+
+Hmm... it looks like the country names are hard to read - there are too many of them! Let's try to look at a specific region. 
+
 ```{r}
-OECD <- sdr_data %>% filter(regions_used_for_the_sdr == "OECD")
+OECD <- sdr_data %>% filter(regions_used_for_the_sdr == "OECD") # filtering for OECD countries only
 
 ggplot(OECD, aes(x= goal_3_score, y = country)) +
   geom_bar(stat = "identity") 
 ```
 
-## Faceted Bar Chart
+#### Faceted Bar Chart
+
+As we talked about in ggplot, let's try to use faceting. Considering that regions_used_for_the_sdr is a *categorical* variable, we can create separate plots based on regions. 
+
 ```{r}
-unique_colors <- c("green" = "darkseagreen", "orange" = "darkorange1", "red" = "coral2", "yellow" = "darkgoldenrod2")
-
-goal_3_faceted_bar_plot <- ggplot(data = sdr_data, aes(x = goal_3_score, 
-                            y = reorder(country, goal_3_score),
-                            fill = goal_3_dash)) +
-  geom_col(stat = "identity") +
-  facet_wrap(~regions_used_for_the_sdr, scales = "free_y") +
-  scale_fill_manual(values = unique_colors) + 
-  theme_minimal() +
-  theme(axis.text.y = element_text(size = 4)) +
-  labs(x = "SDG 3 Score",
-       y = "")
-
-goal_3_faceted_bar_plot
+ggplot(sdr_data, aes(x= goal_3_score, y = country)) +
+  geom_bar(stat = "identity") +
+  facet_wrap(~regions_used_for_the_sdr, scales = "free_y") + # faceting for regions
+  theme(axis.text.y = element_text(size = 4)) # adjusting text size of y-axis values
 ```
 
 Interpretation:
-As we can see in the Oceania region, there is not much data. Sub-Saharan Africa appears to have the most "red" compared to the other regions.
+As we can see in the Oceania region, there is not much data. Sub-Saharan Africa appears to have some of the lowest Goal 3 Scores, while OECD has some of the highest.
 
-# Histogram
+### Histogram
+
+When do we use a **histogram**?
+
+Histograms are awesome at visualizing distributions of a single continuous variable. This can help us in identifying outliers, comparing distributions, and more. 
+
 ```{r}
 ggplot(sdr_data, aes(x = goal_4_score)) +
   geom_histogram()
 ```
 
+This is great for looking at the distribution of Goal 4 scores, but let's explore further with adding another layer of visualization.
+
 ```{r}
-ggplot(sdr_data, aes(x = goal_4_score, fill=regions_used_for_the_sdr)) +
-  geom_histogram()
+ggplot(sdr_data, aes(x = goal_4_score, fill=regions_used_for_the_sdr)) + 
+  geom_histogram(bins=33, color="black")
 ```
 
 Interpretation:
 Countries that fall in the higher end of the Goal 4 spectrum belong to the OECD region, while countries in Sub-Saharan Africa lie towards the lower end. 
 
+### Challenge
+
+1. Create a scatterplot using two different SDG scores. Then, color the points by using a third SDG     score. In a couple of sentences, describe what you see.
+2. Make a histogram for a different SDG score. Then, fill by region. In a couple of sentences,          describe any interesting trends or what you notice from your new histogram.
+3. Create a new bar chart with countries only from the MENA region. 
 

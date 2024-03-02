@@ -1,12 +1,13 @@
 ---
 title: "Troubleshooting Guide"
-author: "Victoria DelaCruz"
+author: "Connor Flynn | Victoria DelaCruz"
 date: ""
 output: 
   html_document:
     toc: true
     toc_float: true
 ---
+<img src="logos/SpiceLogo1.png" width="240" /> <img src="logos/cifal_logo.png" width="200" />
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -16,7 +17,7 @@ Welcome to the Troubleshooting Guide! If you run into errors as we code along du
 
 What does an error in R look like? It pops up in your console as a different color, usually starts with "Error", and continues to tell you what specific line of code caused the error and a description. 
 
-# Package and Library Errors
+### Package and Library Errors
 
 Library and package errors are one of the most common errors and usually happens early on in your code. A package error tends to happen when you haven't installed the package yet, but are trying to load it as a library. Let's try to load in the fortunes package (we haven't installed this yet!): `library(fortunes)`
 
@@ -54,7 +55,7 @@ ggplot(data=iris)+
 
 Great job! 
 
-# File path Errors
+### File path Errors
 
 File path names are super important to know how to get, especially when you're trying to import files into your R session. Try to import the dataset by using the `read_csv()` function and the name of your dataset as your input:
 `filepath_data <- read_csv("SDR-2023-Data.csv")`
@@ -76,7 +77,7 @@ Note: your computer user name will most likely show up in the file path name alo
 
 Success!
 
-# Syntax Errors
+### Syntax Errors
 
 Syntax errors occur when you have missing or unmatched parentheses, curly braces, square brackets, or quotes. Try to run this code with a missing parenthesis: `library(tidyverse`
 
@@ -84,7 +85,7 @@ Syntax errors occur when you have missing or unmatched parentheses, curly braces
 
 You probably didn't get an error message, rather, a couple of plus signs. This means that your code is incomplete. Add the missing parenthesis and you're good to go!
 
-# Typos 
+### Typos 
 
 Although typos may not seem like a big deal, they definitely are in code! Let's attempt to print the filepath_data variable we made earlier:`print(filepath_dat)`
 
@@ -98,7 +99,7 @@ print(filepath_data)
 
 Looks great! 
 
-# Solutions and Resources **NOT DONE**
+### Solutions and Resources **NOT DONE**
 
 There are going to be different types of errors you might encounter that was not covered in this troubleshooting guide. Here are some tips to help you resolve them:
 
