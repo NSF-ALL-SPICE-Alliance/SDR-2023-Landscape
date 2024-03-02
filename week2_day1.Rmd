@@ -113,7 +113,9 @@ There are different data types in R:
 
 To put this into perspective with our knowledge on qualitative and quantitative data:
 
-In most cases, characters and logical R data types are considered qualitative data. Numeric, integer, and complex are mostly considered quantitative data.
+In most cases, characters and logical R data types are considered qualitative data. Numeric, integer, and complex are mostly considered quantitative data. 
+
+The [University of Cincinnati](https://uc-r.github.io/introduction) has a great resource on understanding data types and introducing R in general! 
 
 #### Removing Variables
 
@@ -310,6 +312,7 @@ The awesome thing about data science is that there are so many helpful resources
 - [Geeks for Geeks](https://www.geeksforgeeks.org/r-tutorial/?ref=outind)
 - [Stack Overflow](https://stackoverflow.com/questions/tagged/r)
 - [R Bloggers](https://www.r-bloggers.com/2015/12/how-to-learn-r-2/)
+- [Univeristy of Cincinnati Business Anlytics R Programming Guide](https://uc-r.github.io/introduction)
 
 
 ### Challenge
