@@ -1,0 +1,18 @@
+name: "my-website"
+navbar:
+  title: "SDG Analytics in R"
+  left:
+    - text: "Home"
+      href: index.html
+    - text: "Intro to R"
+      href: rmarkdowns/week2_day1.html
+    - text: "Basic Data Viz"
+      href: rmarkdowns/week2_day2.html
+    - text: "Advanced Viz"
+      href: rmarkdowns/advanced_viz.html
+    - text: "Stats"
+      href: rmarkdowns/stats.html
+    - text: "ML"
+      href: rmarkdowns/week3_day2_ML.html
+    
+    

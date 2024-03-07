@@ -1,0 +1,185 @@
+---
+title: "Advanced Visualizations"
+author: "Connor Flynn | Victoria DelaCruz"
+date: "2/27/2024"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+
+<img src="`r here::here('logos/SpiceLogo1.png')`" width="240" /> <img src="`r here::here('logos/cifal_logo.png')`" width="200" />
+
+### Today's Topics
+
+1. Customizing visualizations
+2. Making static visualizations interactive with *plotly*
+3. Creating interactive maps with *leaflet*
+
+
+### Setup
+
+Loading in our Libraries
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(here)
+library(janitor)
+library(plotly)
+library(rnaturalearth)
+library(leaflet)
+library(sf)
+```
+
+
+Read in 2023 Sustainable Development Data with *read_csv()* and *here()*
+
+
+```{r, message=FALSE}
+sdr_data <- read_csv(here("data/SDR-2023-Data.csv"))
+```
+
+Clean column names
+
+```{r}
+sdr_data <- sdr_data %>% 
+  clean_names()
+```
+
+
+### Customize a Histogram
+
+Let's start with the histogram you created last lesson with ggplot() and geom_histogram()
+
+```{r, message=FALSE, warning=FALSE}
+ggplot(sdr_data, aes(x = goal_4_score, fill=regions_used_for_the_sdr)) +
+  geom_histogram()
+```
+
+
+Looks Nice, but let's improve it!
+  
+  - add a theme with theme_minimal()
+  - add a color palette with scale_fill_viridis_d()
+  - add a title, x axis label, y axis label, and legend label with labs()
+
+We start with the same exact code and add to it with `+`  
+  
+```{r, message=FALSE, warning=FALSE}
+ggplot(sdr_data, aes(x = goal_4_score, fill=regions_used_for_the_sdr)) +
+  geom_histogram() +
+  theme_minimal() +
+  scale_fill_viridis_d() +
+  labs(title = "Distributions of SDG 4 Scores",
+       x = "SDG 4 Score",
+       y = "Number of Countries",
+       fill = "Region")
+  
+```
+
+
+
+Awesome, looking much better!
+
+  - However, it's still a little tricky to tell exactly how many countries in each region have each SDG 4 Score
+  - There's a few ways to go address this, one of them is to make the plot interactive with ggplotly()
+  
+### Making static visualizations interactive
+
+Interactive visualizations are a really exciting part of data science! Interactivity engages the viewer by allowing them to explore the data in a way they cannot with static visualizations
+  
+  - The great part is that with the ggplotly() function from the plotly package, making interactive visualizations is very simple
+  
+    - First we create the plot with the exact same code
+    
+      - The *only difference* is that we assign the plot a name with `<-` the same way we do with dataframes or lists
+      
+      - Next we put the name that we give the plot into the ggplotly function
+   
+      
+```{r}
+goal_4_histogram <- ggplot(sdr_data, aes(x = goal_4_score, fill=regions_used_for_the_sdr)) +
+  geom_histogram() +
+  theme_minimal() +
+  scale_fill_viridis_d() +
+  labs(title = "Distributions of SDG 4 Scores",
+       x = "SDG 4 Score",
+       y = "Number of Countries",
+       fill = "Region")
+
+ggplotly(goal_4_histogram)
+```
+
+
+
+Epic! Now we can hover over the histogram and get some info
+
+  - For example: We can see 2 countries in the LAC region have a score of 68
+  
+We can also double-click the boxes in the legend to only view the regions we're interested in
+
+
+
+### Creating interactive maps with `leaflet`
+
+This takes a few fun steps to do
+
+1. We need data on countries and their physical location on the globe
+
+  - Lucky for us the `rnaturalearth` package has this information for us
+      
+    - We use the ne_countries() function to access the data and we assign it the name *world*
+
+
+```{r}
+world <- ne_countries(scale = "medium", returnclass = "sf")
+```
+
+    - Now we have a dataframe named *world* in our environment
+    - It has 241 locations/countries (rows) and 64 columns describing each location/country
+    - We are only interested in 3 columns:
+
+```{r}
+world <- world %>% 
+  select(name_long, iso_a3, geometry)
+```
+
+
+```{r}
+# Rename a column in a data frame or matrix
+colnames(sdr_data)[which(colnames(sdr_data) == "country_code_iso3")] <- "iso_a3"
+```
+
+
+```{r}
+joined_df <- left_join(sdr_data, world, by = "iso_a3")
+```
+
+
+```{r}
+world_df_joined <- st_as_sf(joined_df)
+```
+
+```{r}
+world_df_joined <- st_transform(world_df_joined, "+proj=longlat +datum=WGS84")
+```
+
+
+```{r}
+mytext <- paste(
+    "Country: ", world_df_joined$country,"<br/>", 
+    "Goal 7 Score: ", round(world_df_joined$goal_7_score, 2), 
+    sep="") %>%
+  lapply(htmltools::HTML)
+
+leaflet(world_df_joined) %>% 
+  addTiles()  %>% 
+  setView( lat=10, lng=0 , zoom=2) %>%
+  addPolygons(stroke = FALSE, fillOpacity = 0.5, smoothFactor = 0.5, color = ~colorQuantile("YlOrRd", goal_7_score)(goal_7_score), label = mytext)
+```
+
+
+
