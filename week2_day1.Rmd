@@ -79,7 +79,7 @@ In order to easily access datasets and values, we need to store them somewhere! 
 1. They are created by using the <- or = sign. 
 2. The coding syntax depends on what type of data value you are trying to store:
     a. Character strings are stored within quotations.
-    b. Numeric values are not surrounded by any symbols (unless you are trying to create a series of        numbers).
+    b. Numeric values are not surrounded by any symbols (unless you are trying to create a series of numbers).
 
 Let's practice creating some variables:
 
@@ -96,6 +96,8 @@ my_age # run the name of your variable to see the output
 my_age + 5 # how old will you be in 5 years?
 ```
 
+#### Challenge 1
+Create a my_name variable with your name assigned to the variable instead of "Victoria DelaCruz". Then, create a my_age variable with your age. 
 
 #### Different Types of Data
 
@@ -277,6 +279,8 @@ You'll notice we used the pipe operator ` %>% ` after the name of the dataframe,
 
 What if we want to subset specific rows? We can do this by using the filter function. 
 
+#### Challenge 2
+Using the `select()` function, select two new SDG goal scores. Assign it to a variable named `SDG_scores`. 
 
 *2. filter()*
 
@@ -296,6 +300,8 @@ Notes:
 
 - In the filter example we just did, we are filtering for Regions that are EQUAL to "Oceania", hence the two equal signs. 
 
+#### Challenge 3
+Using the `filter()` function, filter for another region other than Oceania. Assign it to a variable named `new_region`. 
 
 **Important**
 
@@ -359,11 +365,5 @@ The awesome thing about data science is that there are so many helpful resources
 - [Stack Overflow](https://stackoverflow.com/questions/tagged/r)
 - [R Bloggers](https://www.r-bloggers.com/2015/12/how-to-learn-r-2/)
 - [Univeristy of Cincinnati Business Anlytics R Programming Guide](https://uc-r.github.io/introduction)
-
-
-### Challenge
-1. Create a my_name variable with your name assigned to the variable instead of "Victoria DelaCruz". Then, create a my_age variable with your age. 
-2. Using the `select()` function, select two new SDG goal scores. Assign it to a variable named `SDG_scores`. 
-3. Using the `filter()` function, filter for another region other than Oceania. Assign it to a variable named `new_region`. 
 
 
