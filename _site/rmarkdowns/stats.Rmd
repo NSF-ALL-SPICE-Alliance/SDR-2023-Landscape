@@ -1,7 +1,6 @@
 ---
 title: "Statistics"
 author: "Connor Flynn | Victoria DelaCruz"
-date: "2/26/2024"
 output: 
   html_document:
     toc: true
@@ -188,7 +187,7 @@ To circle back and reinforce how the linear regression (line drawn through our s
 
 - There is a negative correlation between Goal 9 scores and Goal 12 scores: correlation coefficient (-0.82 out of a possible -1)
   
-  - What does this look like on sscatter plot?
+  - What does this look like on scatter plot?
   
 ```{r, warning=FALSE, message=FALSE}
 ggplot(sdr_data, aes(x = goal_12_score, 
@@ -197,16 +196,20 @@ ggplot(sdr_data, aes(x = goal_12_score,
   geom_smooth() +
   stat_cor() +
   theme_minimal() 
+
 ```
 
-### Challenge
+#### <span style="color: red;">Challenge 1</span>
 
-1. Plot a linear regression of 2 different sdg scores with ggplot() and geom_smooth()
-  
-    - add a correlation coefficient to the plot with stat_cor()
-    - make the plot interactive with ggplotly() so you can hover over the points and see the country, x axis sdg score, and y axis sdg score
-    - describe what you see in 4 - 6 sentences
-  
-2. Take a further look at the correlation matrix plotted above
+- Edit the code chunk above to plot a linear regression of 2 different sdg scores 
 
-    - in 4-6 sentences, come up with a hypotheses for the positive or negative correlation between 2 goals
+  - Make the plot interactive with ggplotly() so you can hover over the points and see the country, x axis sdg score, and y axis sdg score
+    
+    - **Hint** to be able to tell which point is which country, you will have to add `label = country` in the aes function after you tell ggplot what you which scores you want on the x and y axis
+     - **Hint** to use the ggplotly() function, you will need to use `library()` to load in the plotly package in the first code chunk in this R Markdown
+
+  - in 4-6 sentences, come up with a hypotheses for the positive or negative correlation between the 2 goals
+      
+      - are there any points that don't follow the trend (outliers)
+        
+        - which country(s) are outliers?
